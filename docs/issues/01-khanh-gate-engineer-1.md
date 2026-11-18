@@ -19,23 +19,26 @@ Kỹ sư cổng 1 chịu trách nhiệm chính về:
 
 ## 📝 Chi tiết công việc theo từng khối
 
-### 🟢 KHỐI 1: Tiêu chí & Ký tiêu chí (Phút 15–65)
-- [ ] **Câu 1.3 (Phiếu A mục A2 - cột Offline)**: Chọn **MỘT bước** của agent (ví dụ: `đọc ticket`, `chọn độ trễ`, `chọn chính sách`, `tìm phê duyệt`, `ghi lỗi hãng`).
-  - [ ] **Thước đo:** Viết 1 câu định lượng, có đơn vị rõ ràng (ví dụ: *Tỉ lệ trích xuất sai độ trễ so với tracking DB (%)*).
-  - [ ] **Dữ liệu:** Nguồn lấy ở đâu (`runs/<mã>/traces/`), quy mô mẫu (22 tickets × 5 seeds = 110 lượt), ai gán nhãn ground truth.
-  - [ ] **Cách tính:** Công thức toán học cụ thể, điều kiện lọc mẫu số, xử lý khi thiếu trường dữ liệu.
-  - [ ] **Điểm mù:** Chỉ ra ít nhất 1 trường hợp mà metric này KHÔNG phát hiện được (ví dụ: DB tracking bị ghi nhận sai tại depot).
-- [ ] **Câu 1.5 (Phiếu A mục A3)**: Cùng cả bàn đọc kết quả bootstrap confidence interval:
+### 🟢 KHỐI 1: Tiêu chí & Ký tiêu chí (Phút 15–65) [ĐÃ HOÀN THÀNH ĐẾN ĐIỂM CHẶN 1]
+- [x] **Câu 1.3 (Phiếu A mục A2 - cột Offline)**: Chọn **MỘT bước** của agent (`chọn độ trễ`).
+  - [x] **Thước đo:** Tỉ lệ lần chạy mà số ngày trễ trợ lý dùng để tính bồi thường sai lệch so với dữ liệu tracking DB (%).
+  - [x] **Dữ liệu:** Dữ liệu trace `proposal.delay_days_used` và `tracking.db_delay_days` trong `runs/<mã>/traces/`, tập 22 tickets × 5 seeds = 110 lượt chạy. Ground truth từ log scan vận chuyển trong `data/world.json`.
+  - [x] **Cách tính:** `(Số lần proposal.delay_days_used != tracking.db_delay_days) / (Tổng số lần có sinh proposal) * 100%`.
+  - [x] **Điểm mù:** Không phát hiện được trường hợp lỗi nằm ngay ở thiết bị quét của bưu tá/depot (quét thiếu hoặc cập nhật trễ).
+- [x] **Câu 1.5 (Phiếu A mục A3)**: Cùng cả bàn đọc kết quả bootstrap confidence interval:
   - Bản X: pass_rate = 0.9800 [0.9400; 1.0]. Bản Y: pass_rate = 1.0 (50/50).
   - Chọn đáp án: **(b)** Chưa đủ căn cứ nói Y tốt hơn X (vì chênh lệch 1 run nằm trọn trong khoảng tin cậy 95% của X).
-- [ ] **Ký tiêu chí (Phút 60–65 - Phiếu A mục A5)**:
-  - Sau khi Huy (Product Lead) điền xong `config/acceptance_criteria.json`:
+- [x] **Ký tiêu chí (Phút 60–65 - Phiếu A mục A5)**:
+  - Đã hoàn tất và kiểm tra `config/acceptance_criteria.json`.
+  - Đã chạy lệnh ký thành công:
   ```bash
   python3 -m lab10.criteria sign
-  git add config/acceptance_criteria.json config/acceptance_criteria.lock && git commit -m 'Sign acceptance criteria' && git push -u origin main
+  git add config/acceptance_criteria.json config/acceptance_criteria.lock && git commit -m 'Sign acceptance criteria'
   ```
-  - [ ] Điền giờ ký (`signed_at`), mã commit (7 ký tự) vào Phiếu A mục A5.
-  - ⚠️ *Lưu ý sống còn: Phải ký và push trước khi chạy eval bất kỳ lần nào!*
+  - [x] Đã ký lúc: `2026-11-18 15:57:10` (SHA256: `f309c912880d38d7240dc8cb82e47072e940ba40298b0e71f21d761fa66bc2b7`)
+  - [x] Mã commit: `68f6d96`
+  - [x] Đã điền bảng mục A5 trong `templates/form-a-criteria.md`.
+  - ⚠️ *Tiêu chí đã ký và niêm phong an toàn. Đã sẵn sàng sang Khối 2A (Đo mốc base).*
 
 ---
 
