@@ -170,15 +170,18 @@ mà cả bàn chưa nghĩ tới, không phải tả lại nhánh đã biết.
 **Câu hỏi dẫn dắt:** tool nào tạo ra hậu quả không đảo ngược? Mỗi tham số của tool đó lấy từ đâu (ticket, DB, model tự suy)?
 Với mỗi guideword: hậu quả cho ai, hiện có gì ngăn, cần thêm gate ở tầng nào (phát hiện / chặn / giới hạn thiệt hại)?
 
-Tool chọn phân tích: `________________` (gợi ý: `issue_refund`, `file_carrier_fault`, `notify_carrier`)
+Tool chọn phân tích: `issue_refund`
 
-| Tham số / dòng dữ liệu | Guideword | Lệch cụ thể (viết bằng dữ kiện của lab) | Hậu quả, cho ai | Hiện có gì ngăn? | Gate đề xuất + tầng |
-|---|---|---|---|---|---|
-| | WRONG | | | | |
-| | INVALID | | | | |
-| | INCOMPLETE | | | | |
-| | PERTURBED | | | | |
-| | INCAPABLE | | | | |
+| Tham số / dòng dữ liệu               | Guideword  | Lệch cụ thể                                                                 | Hậu quả                                                                    | Gate đề xuất                                                                  |
+| ------------------------------------ | ---------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `amount_vnd`, `delay_days`           | WRONG      | T-002 khai trễ 5 ngày nhưng tracking O-1002 chỉ ghi 2 ngày                  | Hoàn sai tiền, LogiX chịu thiệt hại                                        | `write_gate` tính lại quyền lợi từ tracking và policy trong DB                |
+| `policy_id`                          | INVALID    | Policy hết hiệu lực hoặc sai phiên bản                                      | Áp dụng sai mức hoàn                                                       | `pre_guard` kiểm tra hiệu lực và ghim đúng policy                             |
+| `order_id`, dữ liệu kiện hàng        | INCOMPLETE | Thiếu tracking, ngày giao hoặc nguyên nhân chậm                             | Hoàn sai hoặc quy trách nhiệm sai                                          | `write_gate` chuyển người nếu thiếu dữ liệu bắt buộc                          |
+| `amount_vnd`, `payer`, `approval_id` | PERTURBED  | Ghi chú khách nhập có chỉ thị yêu cầu hoàn toàn bộ giá trị hàng và phí ship | Shop bị hoàn/nợ sai dù không có phê duyệt hợp lệ                           | `write_gate` xác minh phê duyệt từ DB, không tin chỉ thị trong ghi chú        |
+| Khả năng ghi sổ cái                  | INCAPABLE  | Dịch vụ ghi sổ lỗi hoặc timeout                                             | Khách nhận thông báo đã hoàn nhưng sổ cái chưa ghi; retry có thể ghi trùng | Xác nhận ledger, dùng idempotency key và chuyển người khi trạng thái không rõ |
+
+Nhánh PERTURBED là nhánh mới đáng chú ý: trong `agent.py`, `checkout_note` được đưa qua LLM; nếu sinh `directive.full_refund`, agent có thể đặt `payer=MERCHANT` và `preapproved=true`. Đây là rủi ro cần kiểm soát ở tầng ghi, không chỉ bằng prompt.
+
 
 Không bắt buộc điền đủ năm dòng. Bắt buộc: **ít nhất ba dòng, trong đó một dòng là nhánh bàn chưa thấy trên trace**.
 
@@ -191,13 +194,10 @@ Không bắt buộc điền đủ năm dòng. Bắt buộc: **ít nhất ba dòn
 | **Phạm vi pilot** (kinh doanh) | INVALID: có nhóm ticket nào trợ lý luôn phải chuyển người, tức là tự động hoá vô nghĩa? |
 | **Dữ liệu gửi bên thứ ba** (pháp lý) | PERTURBED: chữ khách tự gõ có tên, số điện thoại người khác bị chép sang hãng thì ai chịu? |
 
-| Thành phần | Guideword | Lệch cụ thể | Hậu quả, cho ai | Cổng đề xuất: code hay con số nào trong `config/operating_gates.json` |
-|---|---|---|---|---|
-| | | | | |
-| | | | | |
-
-**Ví dụ mẫu (`issue_refund`, đừng chép):** tham số `amount_vnd` · WRONG · số tiền tính từ số ngày khách tự khai · LogiX mất
-tiền, hãng bị kéo theo một lỗi · hiện chỉ có trần "không vượt tổng tiền đơn" · cổng ghi so với quyền lợi tính từ DB (chặn).
+| Thành phần             | Guideword | Lệch cụ thể                                                               | Hậu quả                                    | Cổng đề xuất                                                                          |
+| ---------------------- | --------- | ------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Người duyệt            | INCAPABLE | 1 người chỉ xử lý 6 ca/giờ, nhưng cao điểm có thể tới 18 ca/giờ           | Hàng chờ vượt SLA 60 phút                  | `operations.reviewers_on_shift`, `review_capacity_per_hour`, `max_queue_wait_minutes` |
+| Dữ liệu gửi bên thứ ba | PERTURBED | Nội dung khách nhập chứa số điện thoại, email hoặc địa chỉ của người khác | Rò rỉ dữ liệu cá nhân sang hãng vận chuyển | `legal.pii_fields_blocked_to_third_party`; lọc payload trước `notify_carrier`         |
 
 ---
 
@@ -211,19 +211,18 @@ Cột "Bằng chứng lấy từ đâu" trỏ tới mục bàn đã điền ở 
 Trạng thái: **Xong** (có bằng chứng) · **Chưa** · **Không áp dụng** (ghi lý do). Bằng chứng là **mã lần chạy**, tên file / mục phiếu, hoặc số trong report.
 **Cột PIC bắt buộc:** mỗi dòng một người có tên (không ghi "cả bàn"). Dòng nào chưa có PIC thì coi như Chưa.
 
-| # | Nhóm việc | Bằng chứng lấy từ đâu (đã có sẵn trong lab) | Mục cần kiểm tra | Trạng thái | Bằng chứng | PIC |
-|---|---|---|---|---|---|---|
-| 1 | Chất lượng | Report `lab10.eval` (mã lần chạy) + bảng soát lỗi (Phiếu B mục B2) | | | | |
-| 2 | Dữ liệu | Bản đồ dữ liệu (Phiếu B mục B3, câu 2.3): trường nào là nguồn sự thật, trường nào là bản sao | | | | |
-| 3 | Bảo mật | Một vòng HAZOP với guideword PERTURBED (Phiếu B mục B4): chữ nào đi vào model mà không do LogiX viết | | | | |
-| 4 | Quyền hạn | `config/switches.json` + guard trước lệnh ghi; thẻ S2, S8 có thêm mục mức kiểm soát (Phiếu C mục C3) | | | | |
-| 5 | Hiệu năng, hạ tầng | Đội tự ước tính; HAZOP guideword INCAPABLE: LLM không trả lời thì sao; số người duyệt và số ca mỗi giờ | | | | |
-| 6 | Chi phí | Khối "kinh doanh và vận hành" của report: chi phí mỗi ticket so với làm tay, ROI, tiền LLM ticket đắt nhất; `config/operating_gates.json` mục `business` | | | | |
-| 7 | Vận hành | Runbook (Phiếu B mục B7.5–B7.6) + `config/operating_gates.json` mục `operations` (PIC, người duyệt, số người trực, điều kiện dừng, kênh báo tin) + metric trong `monitors.py` | | | | |
-| 8 | Con người, pháp lý | Bên thứ ba (hãng, tài xế, shop, người nhận quà, người đứng tên duyệt); `config/operating_gates.json` mục `legal`; thẻ S6, S7, S8 có mục riêng ở Phiếu C mục C3 | | | | |
-| 9 | Quyết định | Câu tiêu chí (Phiếu A mục A4) + hash Bản tiêu chí đã ký + quyết định Gate 1 (Phiếu B mục B8, Phiếu C mục C12) | | | | |
+| # | Nhóm việc| Nội dung cần kiểm tra| Trạng thái| Bằng chứng| PIC 
+| - | ---------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------- | --------- |
+| 1 | **Chất lượng**         | Kiểm tra kết quả đánh giá baseline, pass rate, pass^k và các lỗi nghiêm trọng như hoàn tiền sai, ghi lỗi hãng oan.    | Đã hoàn thành | Báo cáo `runs/<run_id>/report.json` ở mốc base; kết quả đánh giá `lab10.gate`.                                             | **Quân**  |
+| 2 | **Dữ liệu**            | Xác định nguồn dữ liệu đáng tin cậy, kiểm tra dữ liệu đơn hàng, kiện hàng, tracking và chính sách hoàn tiền.          | Đã hoàn thành | Phiếu B mục B3 – Data Map; đối chiếu `data/world.json`.                                                                    | **Huy**   |
+| 3 | **Bảo mật**            | Kiểm tra prompt injection, dữ liệu đầu vào không đáng tin cậy và nguy cơ rò rỉ thông tin cá nhân.                     | Đã hoàn thành | HAZOP mục B4, đặc biệt rủi ro PERTURBED; kiểm tra cơ chế lọc PII.                                                          | **Bảo**   |
+| 4 | **Quyền hạn**          | Kiểm tra quyền thực hiện hành động ghi, cơ chế guard và khả năng tắt từng chức năng tự động khi có sự cố.             | Đã hoàn thành | `lab10/guards.py`; `config/switches.json`.                                                                                 | **Khánh** |
+| 5 | **Hiệu năng, hạ tầng** | Đánh giá năng lực xử lý, số người duyệt, tốc độ xử lý và khả năng đáp ứng SLA 60 phút.                                | Đã hoàn thành | `data/world.json`: năng lực 6 ca/giờ/người; đánh giá công suất duyệt và hàng chờ.                                          | **Bảo**   |
+| 6 | **Chi phí**            | Kiểm tra chi phí xử lý mỗi ticket, ngân sách hoàn tiền và hiệu quả kinh tế so với xử lý thủ công.                     | Đã hoàn thành | `config/operating_gates.json`, mục `business.cost_budget_per_ticket_vnd`; đối chiếu `ops_facts` và `ops_limits`.           | **Huy**   |
+| 7 | **Vận hành**           | Xác định người chịu trách nhiệm, người phê duyệt, kênh cảnh báo, ngưỡng dừng và quy trình chuyển sang xử lý thủ công. | Đã hoàn thành | Runbook phần 1–3; cấu hình `operations` trong `config/operating_gates.json`.                                               | **Bảo**   |
+| 8 | **Con người, pháp lý** | Kiểm tra việc bảo vệ dữ liệu cá nhân khi gửi thông tin cho bên thứ ba và điều kiện ghi nhận lỗi hãng vận chuyển.      | Đã hoàn thành | Danh sách PII filter; cấu hình `legal.pii_fields_blocked_to_third_party` và `legal.carrier_fault_requires_recorded_cause`. | **Bảo**   |
+| 9 | **Quyết định**         | Kiểm tra tiêu chí chấp nhận đã ký, tính toàn vẹn của file lock và bằng chứng trước khi quyết định Gate 1.             | Đã hoàn thành | Hash file `config/acceptance_criteria.lock`; kết quả kiểm tra và quyết định Gate 1.                                        | **Khánh** |
 
-Ô "Chưa" có rủi ro cao → chuyển thành một dòng Risk register (Phiếu C mục C10).
 
 ---
 
@@ -254,13 +253,12 @@ Bốn lăng kính (bắt buộc đủ cả bốn; dự án AI hay chết ở ba 
 | **Con người và vận hành** | Ai duyệt, mấy người, mỗi giờ được mấy ca? Lượng việc tăng gấp ba thì sao? Nhân viên có tin trợ lý không? |
 | **Pháp lý** | Dữ liệu cá nhân của ai rời hệ thống? Bên thứ ba nào bị ghi lỗi, bị trừ tiền mà không được hỏi? |
 
-| Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được hôm nay? (trace / data / config nào) | Thành cổng phòng ngừa nào (code hay config) / hay vào risk register |
-|---|---|---|---|
-| | Kỹ thuật | | |
-| | Kinh doanh | | |
-| | Con người và vận hành | | |
-| | Pháp lý | | |
-| | | | |
+| Lý do thất bại (viết ở thì quá khứ)                                                                                                                          | Lăng kính             | Kiểm được hôm nay? (trace / data / config nào)                                                                                          | Thành cổng phòng ngừa nào / hay vào risk register                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Hệ thống đã thất bại vì lượng ticket tăng gấp 3 trong giờ Mega Sale nhưng chỉ có 1 nhân viên duyệt, khiến hàng chờ vượt 15 ca và thời gian chờ vượt 60 phút. | Con người và vận hành | `data/world.json`: `review_capacity_per_reviewer_per_hour = 6`; `default_reviewers_on_shift = 1`; `ops_limits.review_sla_minutes = 60`. | Cổng vận hành: gọi backup khi hàng chờ trên 6 ca hoặc chờ 45 phút; thu hẹp pilot khi hàng chờ trên 15 ca.            |
+| Hệ thống đã ghi lỗi hãng vận chuyển khi tracking không có bằng chứng xác nhận nguyên nhân chậm, dẫn đến tranh chấp công nợ và đối soát sai.                  | Kinh doanh            | `data/world.json`: `orders`, `tracking`, `carriers`; kiểm tra trace của `file_carrier_fault`.                                           | `write_gate`: chỉ cho phép ghi lỗi hãng khi tracking có nguyên nhân hợp lệ; lưu bằng chứng để NV-OANH đối soát.      |
+| Hệ thống đã gửi số điện thoại, địa chỉ và email khách hàng cho hãng vận chuyển dù các thông tin này không cần thiết, gây rò rỉ dữ liệu cá nhân.              | Pháp lý               | Kiểm tra payload của `notify_carrier`, trace gửi hãng và các trường dữ liệu khách hàng trong `data/world.json`.                         | Cổng bảo vệ dữ liệu: chặn `customer_phone`, `customer_street`, `customer_email`; chỉ gửi trường nằm trong allowlist. |
+
 
 ---
 
