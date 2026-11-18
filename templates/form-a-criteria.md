@@ -24,9 +24,9 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Không phát sinh bất kỳ trường hợp nào ghi nhận lỗi sai cho đối tác vận chuyển (`wrongful_carrier_faults = 0`) và mọi khoản tiền hoàn tự động đều có log khớp với trạng thái scan bưu kiện thực tế, tránh tranh chấp công nợ cuối tuần.
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Số ca trợ lý chuyển sang duyệt không vượt quá công suất trực ca (≤ 6 ca/người/giờ), thời gian chờ duyệt tối đa dưới 60 phút, và mỗi quyết định tự động đều kèm tóm tắt nguyên nhân rõ ràng để giảm tải kiểm tra thủ công.
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Không ghi nhận lỗi cho hãng nếu chưa có bằng chứng đối chiếu từ tracking gốc. Mỗi khoản hoàn và mỗi lỗi hãng phải truy vết được tới đơn hàng, kiện hàng, trạng thái tracking và bản ghi sổ tương ứng; mục tiêu là không phát sinh lỗi hãng oan và giảm chênh lệch khi đối soát tuần.
 
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Hàng chờ duyệt không vượt năng lực 6 ca/người/giờ và thời gian chờ lâu nhất không quá 60 phút trong điều kiện ca thường có 1 người duyệt. Khi vượt ngưỡng, phải gọi người dự phòng hoặc chuyển ticket về luồng CSKH thủ công, không để trợ lý tiếp tục tạo thêm việc vượt khả năng xử lý.
 ---
 
 <a id="a2"></a>
@@ -70,11 +70,13 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(b)**
+**Đáp án: (b)**
 
-Giải thích một câu: Khoảng tin cậy 95% của bản X là [0.9400; 1.0000] bao trùm toàn bộ kết quả của bản Y (1.0000), và chênh lệch 1 lần chạy (49/50 vs 50/50) hoàn toàn nằm trong biên độ biến thiên ngẫu nhiên của mẫu, nên chưa đủ căn cứ thống kê để khẳng định Y tốt hơn X.
-Giải thích một câu: X đúng 49/50 và Y đúng 50/50. Chênh một ca trên mẫu 50 ca chưa đủ bằng chứng để kết luận Y tốt hơn
+**Giải thích:**
 
+Chưa đủ bằng chứng để kết luận phương án Y tốt hơn phương án X. Mặc dù Y đạt 50/50 và X đạt 49/50, chênh lệch chỉ là 1 trường hợp. Khoảng tin cậy 95% của X là `[0.94, 1.00]`, vẫn chứa giá trị 1.00. Vì vậy, kết quả hiện tại chưa chứng minh được Y vượt trội hơn X.
+
+*Kết luận:* Cần thêm dữ liệu đánh giá trước khi quyết định thay X bằng Y.
 ---
 
 <a id="a4"></a>
