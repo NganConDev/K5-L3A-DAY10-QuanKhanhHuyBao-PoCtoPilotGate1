@@ -1,7 +1,7 @@
 {
   "team": "K5-L3A-DAY10-QuanKhanhHuyBao-PoCtoPilotGate1",
   "version": "1.0 (nối PRD v1.1 và eval card của Lab 9)",
-  "signed_by": "Sản phẩm và kinh doanh",
+  "signed_by": "NguyenVanHuy-2A20203432-Sản phẩm và kinh doanh",
   "gate": "Bước đánh giá 1 (kết thúc PoC)",
   "required": {
     "pass_rate_min": 0.85,
