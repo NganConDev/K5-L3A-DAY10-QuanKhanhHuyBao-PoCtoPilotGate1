@@ -7,23 +7,26 @@
     "roi_min": 0.30
   },
   "operations": {
-    "pic": "NV-TUNG",
-    "approver_id": "NV-HANH",
-    "reviewers_on_shift": 1,
-    "review_capacity_per_hour": 6,
-    "max_queue_wait_minutes": 60,
-    "stop_conditions": [
-      "queue_stuck > 2",
-      "wrongful_refund_vnd > 0",
-      "pii_leaks > 0",
-      "daily_auto_refund_vnd > 2000000"
-    ],
-    "alert_channel": "ops-cskh-logix",
-    "decision_note": true,
-    "review_sampling_pct": 10
+  "pic": "NV-TUNG",
+  "approver_id": "NV-HANH",
+  "reviewers_on_shift": 3,
+  "review_capacity_per_hour": 6,
+  "max_queue_wait_minutes": 60,
+  "stop_conditions": [
+    "Khi có 1 lỗi ghi oan cho hãng vận chuyển",
+    "Khi tiền hoàn tự động trong ngày vượt 2.000.000 VNĐ",
+    "Khi có sự cố rò rỉ dữ liệu cá nhân"
+  ],
+  "alert_channel": "slack-cskh-ops-alerts",
+  "decision_note": true,
+  "review_sampling_pct": 10
   },
   "legal": {
-    "pii_fields_blocked_to_third_party": ["customer.name", "customer.phone", "customer.street", "recipient.name", "recipient.phone", "recipient.street"],
-    "carrier_fault_requires_recorded_cause": true
+  "pii_fields_blocked_to_third_party": [
+    "customer_phone",
+    "customer_street",
+    "customer_email"
+  ],
+  "carrier_fault_requires_recorded_cause": true
   }
 }
