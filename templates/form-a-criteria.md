@@ -6,6 +6,7 @@
 rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 **Mục lục**
+
 - [A1 · Mục tiêu (câu 1.1, 1.2) · phút 15–20](#a1)
 - [A2 · Thước đo → Dữ liệu → Cách tính (câu 1.3, 1.4) · phút 20–35](#a2)
 - [A3 · Đọc một kết quả có khoảng tin cậy (câu 1.5) · phút 35–40](#a3)
@@ -19,7 +20,6 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 ## A1 · Mục tiêu (phút 15–20)
 
 ### Câu 1.1 · Một mục tiêu cấp hệ thống (khác "model trả lời đúng")
-
 
 > Trợ lý thay thế hoàn toàn bước xử lý thủ công cho các ca hoàn tiền giao trễ nằm trong chính sách tự động, đảm bảo khách nhận phản hồi trong cùng ngày làm việc, sổ cái của LogiX khớp với hãng vận chuyển, và kế toán đối soát không phát sinh thêm công việc kiểm tra bổ sung.
 
@@ -39,15 +39,14 @@ DỮ LIỆU nào, ở đâu, ai gán nhãn; TÍNH thế nào để hai người 
 
 ### Câu 1.3 · Offline metric cho MỘT bước · Câu 1.4 · Telemetry production
 
-| | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
-|---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
-| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+|                                                                | Offline, cho MỘT bước (câu 1.3)                                                                                                                                                                                                                                                                                                                                                                                          | Telemetry production (câu 1.4)                                                                                                                                             |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bước / hành vi được đo**                                     | Bước: Trích xuất số ngày giao trễ (`delay_days_used`) để áp chính sách hoàn tiền                                                                                                                                                                                                                                                                                                                                         | Tỉ lệ khách khiếu nại lại sau khi nhận quyết định hoàn tiền (Re-escalation rate)                                                                                           |
+| **Thước đo** (một câu, có đơn vị)                              | Tỉ lệ lần chạy mà số ngày trễ trợ lý dùng để tính bồi thường sai lệch so với dữ liệu tracking DB (%)                                                                                                                                                                                                                                                                                                                     | Tỉ lệ ticket phát sinh khiếu nại lần 2 hoặc gọi tổng đài trong vòng 24 giờ sau khi trợ lý xử lý (%)                                                                        |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn)                | Dữ liệu trace: sự kiện `proposal.delay_days_used` và `tracking.db_delay_days` trong `runs/<mã>/traces/`, tập 22 tickets × 5 seeds = 110 lượt chạy. Ground truth lấy từ log scan vận chuyển trong `data/world.json`.                                                                                                                                                                                                      | Log tổng đài CSKH và cổng tiếp nhận khiếu nại web/app, gom nhóm theo `ticket_id` / `order_id`. Không có nhãn đúng/sai; dùng hành vi phản hồi của khách làm tín hiệu proxy. |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | `(Số lần proposal.delay_days_used != tracking.db_delay_days) / (Tổng số lần có sinh proposal) * 100%`. Ca không tới được bước proposal (lỗi cú pháp hoặc từ chối sớm) bị loại khỏi mẫu số và thống kê riêng.                                                                                                                                                                                                             | `(Số ticket bị khiếu nại lại trong 24h) / (Tổng số ticket trợ lý tự động giải quyết trong 24h) * 100%`. Ticket đang chờ duyệt không tính vào mẫu số.                       |
+| **Khung thời gian / ngưỡng báo động**                          | (không áp dụng)                                                                                                                                                                                                                                                                                                                                                                                                          | Cửa sổ trượt 4 giờ. Báo động VÀNG khi > 5%, Báo động ĐỎ khi > 10% (kích hoạt tạm dừng auto-resolve).                                                                       |
+| **Điểm mù** (thước đo này KHÔNG thấy gì)                       | 1. Không phát hiện được trường hợp lỗi nằm ngay ở thiết bị quét của bưu tá/depot (quét thiếu hoặc cập nhật trễ vào DB).<br>2. Chưa tự phân biệt được lỗi tracking đầu vào với lỗi suy luận của trợ lý. Khi số ngày trễ bị tính sai, cần đối chiếu lần lượt bản ghi tracking gốc, dữ liệu công cụ trả về và số ngày trễ trợ lý đã chọn để phân biệt lỗi dữ liệu đầu vào với lỗi suy luận khi trợ lý đã nhận đúng dữ liệu. | Không đo được sự bất mãn của những khách hàng âm thầm bỏ dịch vụ (silent churn) mà không khiếu nại lại.                                                                    |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
@@ -55,7 +54,7 @@ và `tracking.db_delay_days` trong `runs/<mã lần chạy>/traces/`, 22 ticket 
 nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không tới bước `proposal` bị loại khỏi mẫu số và đếm riêng.
 Điểm mù: không thấy trường hợp chính tracking DB sai.
 
-*(Ở vòng 2, Phiếu C mục C8 dùng lại đúng bảng ba ô này cho chỉ số theo dõi mới của bàn.)*
+_(Ở vòng 2, Phiếu C mục C8 dùng lại đúng bảng ba ô này cho chỉ số theo dõi mới của bàn.)_
 
 ---
 
@@ -67,7 +66,7 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 Số minh hoạ trong đề (không phải số của bàn). Khoanh: (a) · **(b)** · (c) · (d)
 
-
+Giải thích một câu: Khoảng tin cậy 95% của bản X là [0.9400; 1.0000] bao trùm toàn bộ kết quả của bản Y (1.0000), và mức chênh lệch 1 ca (49/50 vs 50/50) hoàn toàn nằm trong biên độ sai số ngẫu nhiên của mẫu, nên chưa đủ căn cứ thống kê để khẳng định Y tốt hơn X.
 Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa cả điểm 1,0 của Y, nên sự chênh lệch 1 lần chạy không có ý nghĩa thống kê và chưa đủ căn cứ để kết luận Y tốt hơn X.
 
 ---
@@ -81,7 +80,7 @@ Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa 
 #### Bước 1 · Viết câu tiêu chí
 
 | Chỉ số (khoá trong `acceptance_criteria.json`) | Phiên bản 1 | Phiên bản 2 (nếu có) |
-|---|---|---|
+| ---------------------------------------------- | ----------- | -------------------- |
 
 | `pass_rate_min` | Nếu tỉ lệ ca trợ lý xử lý đúng (pass_rate) trên bộ nền tụt dưới **85%** thì chúng tôi sẽ chọn Cải tiến thêm và không triển khai pilot cho đến khi đạt ngưỡng. | Nếu tụt dưới 85% và nhóm không có giả thuyết sửa cụ thể trong 2 tuần thì chúng tôi sẽ Dừng. |
 | `pass_k_min` (pass^k: ticket đúng cả 5/5 lần chạy) | Nếu tỉ lệ ticket đúng toàn bộ 5 seed (pass^k) tụt dưới **75%** thì chúng tôi sẽ Thu hẹp phạm vi pilot về kho có tỉ lệ cao hơn và Cải tiến thêm. | — |
@@ -97,11 +96,10 @@ Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa 
 - Một đầu ra hoặc hành động bị cấm: Trợ lý không được tự động hoàn vượt quá **200.000đ** cho một khách trong một ngày (theo policy REFUND-v3, `auto_limit_vnd` = 200.000); mọi khoản vượt mức này phải chuyển cho người duyệt, không được ghi sổ tự động.
 - Ngưỡng chuyển cho người duyệt: Chuyển khi tổng tiền hoàn tự động cho một khách trong ngày đạt 200.000đ, HOẶC hãng vận chuyển đã bị ghi lỗi ≥ 3 lần trong ngày (`ops_limits.max_auto_strikes_per_carrier_per_day` = 2, từ lỗi thứ 3 phải có người duyệt), HOẶC nguyên nhân trễ không phải CARRIER hay FORCE_MAJEURE trong policy hiện hành.
 
-
 #### Bước 2 · Soát từng câu
 
 | Câu hỏi soát | Ghi chú của bàn |
-|---|---|
+| ------------ | --------------- |
 
 | Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | Có: khách quan tâm pass_rate (đúng tiền), hãng quan tâm wrongful_carrier_faults (không bị oan), kế toán quan tâm wrongful_refund_vnd (sổ sạch), người duyệt quan tâm escalation_rate (không bị ùn), lãnh đạo quan tâm ROI và cost. |
 | Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | Nếu ép pass_rate quá cao → guard chặn nhiều → người duyệt (NV-HANH) gánh khối lượng lớn hơn. Nếu ép cost thấp quá → giảm độ phủ pilot → khách ở kho nhỏ không được hưởng lợi. |
@@ -120,6 +118,7 @@ Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa 
 
 **Ví dụ một câu (đừng chép ngưỡng):** "Nếu số lỗi hãng oan của trợ lý trên bộ nền hoặc trên bất kỳ gói thử nào vượt quá 0
 thì chúng tôi sẽ không chọn Tiếp tục; nếu sau một vòng sửa vẫn vượt, tắt tool ghi lỗi hãng và chọn Thu hẹp."
+
 ---
 
 <a id="a5"></a>
@@ -134,11 +133,10 @@ python3 -m lab10.criteria sign
 git add config/acceptance_criteria.json config/acceptance_criteria.lock && git commit -m 'Sign acceptance criteria' && git push -u origin main
 ```
 
-| Mục | Điền |
-|---|---|
-| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | 2026-11-18 |
-| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | `0d95f88` |
-| Đã push lên `origin main` thành công? | có (branch huy) |
+| Mục                                                                             | Điền            |
+| ------------------------------------------------------------------------------- | --------------- |
+| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | 2026-11-18      |
+| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`)      | `0d95f88`       |
+| Đã push lên `origin main` thành công?                                           | có (branch huy) |
 
 Sau bước này **không sửa** `config/acceptance_criteria.json`, kể cả mở rồi lưu lại bằng trình soạn thảo tự định dạng.
-
