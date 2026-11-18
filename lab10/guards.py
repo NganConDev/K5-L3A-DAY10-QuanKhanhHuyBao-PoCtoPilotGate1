@@ -34,9 +34,70 @@ from .tools import Verdict
 
 
 def pre_guard(ctx):
+    # Ghim phiên bản chính sách đang hiệu lực để model không tự chọn nhầm phiên bản
+    policies = ctx.tools.lookup_policies()
+    policy = H.effective_policy(policies, ctx.as_of)
+    if policy:
+        return Verdict.allow(policy_id=policy["policy_id"])
     return Verdict.allow()
 
 
 def write_gate(ctx, action):
     # action = {"tool": "issue_refund", "ticket_id":..., "order_id":..., "amount_vnd":..., "payer":..., ...}
+    tool = action["tool"]
+
+    # CỔNG 1: Xác minh số tiền hoàn dựa vào DB tracking, không dựa vào số ngày khách tự khai
+    if tool == "issue_refund":
+        order = ctx.tools.lookup_order(action["order_id"])
+        if order is None:
+            return Verdict.escalate("không tìm thấy đơn hàng trong DB")
+        policies = ctx.tools.lookup_policies()
+        policy = H.effective_policy(policies, ctx.as_of)
+        if policy is None:
+            return Verdict.escalate("không xác định được phiên bản chính sách hiệu lực")
+        parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+        db_delay = H.db_delay_days(parcel, ctx.as_of)
+        db_amount = H.entitlement_vnd(policy, order, db_delay, parcel.get("delay_cause"))
+        if action["amount_vnd"] != db_amount:
+            if db_amount == 0:
+                return Verdict.escalate(
+                    f"model đề xuất hoàn {action['amount_vnd']}đ nhưng DB cho thấy không đủ điều kiện: "
+                    f"trễ {db_delay} ngày theo tracking, ngưỡng tối thiểu {policy['late']['min_days_fee']} ngày"
+                )
+            return Verdict.modify(
+                f"sửa số tiền hoàn theo DB: {action['amount_vnd']}đ → {db_amount}đ "
+                f"(DB trễ {db_delay} ngày, không phải số khách khai)",
+                amount_vnd=db_amount,
+            )
+
+    # CỔNG 2: Chỉ ghi lỗi hãng khi DB tracking xác nhận đủ điều kiện (trễ đủ ngày và đúng nguyên nhân)
+    if tool == "file_carrier_fault":
+        order = ctx.tools.lookup_order(action["order_id"])
+        if order is None:
+            return Verdict.escalate("không tìm thấy đơn hàng khi kiểm tra lỗi hãng")
+        policies = ctx.tools.lookup_policies()
+        policy = H.effective_policy(policies, ctx.as_of)
+        if policy is None:
+            return Verdict.escalate("không xác định được phiên bản chính sách hiệu lực")
+        parcel_id = action.get("parcel_id")
+        parcel = next((p for p in order["parcels"] if p["parcel_id"] == parcel_id), None)
+        if parcel is None:
+            parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+        db_delay = H.db_delay_days(parcel, ctx.as_of)
+        if not H.carrier_at_fault(policy, parcel, db_delay):
+            return Verdict.deny(
+                f"DB không xác nhận lỗi hãng: trễ {db_delay} ngày (ngưỡng {policy['late']['min_days_fee']} ngày), "
+                f"nguyên nhân={parcel.get('delay_cause')}"
+            )
+
+    # CỔNG 3: Xóa customer_note khỏi thông báo gửi hãng để không rò rỉ chữ khách viết (có thể chứa PII)
+    if tool == "notify_carrier":
+        payload = dict(action.get("payload") or {})
+        if "customer_note" in payload:
+            payload.pop("customer_note")
+            return Verdict.modify(
+                "xóa customer_note khỏi payload gửi hãng: chữ khách viết tự do có thể chứa tên/số điện thoại bên thứ ba",
+                payload=payload,
+            )
+
     return Verdict.allow()
