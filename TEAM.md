@@ -16,7 +16,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; thêm dòng nếu 
 |   1 | Nguyễn Nam Khánh | 2A202603398 | Kỹ sư cổng 1 | Có |
 |   2 | Lê Hoàng Quân | 2A202603369 | Kỹ sư cổng 2 (QA & Trace Engineer) | Không |
 |   3 | Nguyễn Văn Huy | 2A20203432 | Sản phẩm và kinh doanh | Không |
-|   4 | Bảo | (Cập nhật sau) | Vận hành và pháp lý | Không |
+|   4 | Dương Quang Bảo | 2A202603362 | Vận hành và pháp lý | Không |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
 
