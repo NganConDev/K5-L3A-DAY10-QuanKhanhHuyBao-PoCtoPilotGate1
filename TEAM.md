@@ -13,7 +13,7 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; thêm dòng nếu 
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 |           |      |     |             |
+|   1 | Lê Hoàng Quân|2A202603369|Kỹ sư cổng 2 (QA & Trace Engineer)|             |
 |   2 |           |      |     |             |
 |   3 |           |      |     |             |
 |   4 |           |      |     |             |
@@ -22,22 +22,23 @@ Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, k
 
 ## Cá nhân
 
-Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi tiêu đề thành họ tên không dấu và MSSV, ví dụ `## NguyenVanAn-20241234`).
-
-## HoVaTen-MSSV
+## LeHoangQuan-2A202603369
 
 ### Phần việc phụ trách
 
-Vai trong bàn; câu nào của đề, mục nào của phiếu A/B/C, file nào (`lab10/guards.py`, `config/operating_gates.json`, …).
+Kỹ sư cổng 2 theo issue #3. Phụ trách góp ý A2–A3, phân tích trace ở B2,
+đóng góp B6 và kiểm thử hành vi ở B7.2–B7.3.
 
 ### Đóng góp cụ thể
 
-...
+- Kiểm tra môi trường trên Windows với Python 3.11.9, đạt 13/13 tests.
+- Góp ý điểm mù của thước đo ở A2 và giải thích lựa chọn (b) ở A3.
+- Dùng AI để hỗ trợ rà và diễn đạt góp ý A2–A3.
 
 ### Bằng chứng
 
-Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
+Phiếu A, mục A2 và A3. Bổ sung mã commit hoặc mã lần chạy khi có.
 
 ### Exit ticket
 
-Một điều học được, một điều còn chưa chắc.
+Bổ sung cuối buổi.
