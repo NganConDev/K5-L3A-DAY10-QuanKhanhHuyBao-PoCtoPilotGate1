@@ -55,6 +55,19 @@ def write_gate(ctx, action):
         policy = H.effective_policy(policies, ctx.as_of)
         if policy is None:
             return Verdict.escalate("không xác định được phiên bản chính sách hiệu lực")
+
+        # S6: ticket không ghi parcel_id, nhiều hãng đều có lỗi → không tự động hoàn, cần người xác nhận
+        if not ctx.ticket.get("parcel_id"):
+            at_fault_carriers = {
+                p["carrier_id"] for p in order["parcels"]
+                if H.carrier_at_fault(policy, p, H.db_delay_days(p, ctx.as_of))
+            }
+            if len(at_fault_carriers) > 1:
+                return Verdict.escalate(
+                    f"đơn có {len(at_fault_carriers)} hãng đều bị lỗi DB ({', '.join(sorted(at_fault_carriers))}), "
+                    f"ticket không ghi rõ kiện nào: cần người xác nhận hãng chịu trách nhiệm trước khi hoàn"
+                )
+
         parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
         db_delay = H.db_delay_days(parcel, ctx.as_of)
         db_amount = H.entitlement_vnd(policy, order, db_delay, parcel.get("delay_cause"))
@@ -71,6 +84,7 @@ def write_gate(ctx, action):
             )
 
     # CỔNG 2: Chỉ ghi lỗi hãng khi DB tracking xác nhận đủ điều kiện (trễ đủ ngày và đúng nguyên nhân)
+    # Thêm S6: đơn tách kiện nhiều hãng → chỉ ghi khi xác định được đúng kiện/hãng
     if tool == "file_carrier_fault":
         order = ctx.tools.lookup_order(action["order_id"])
         if order is None:
@@ -79,12 +93,47 @@ def write_gate(ctx, action):
         policy = H.effective_policy(policies, ctx.as_of)
         if policy is None:
             return Verdict.escalate("không xác định được phiên bản chính sách hiệu lực")
-        parcel_id = action.get("parcel_id")
-        parcel = next((p for p in order["parcels"] if p["parcel_id"] == parcel_id), None)
+
+        # Danh sách kiện thực sự có lỗi hãng theo DB
+        at_fault_parcels = [
+            p for p in order["parcels"]
+            if H.carrier_at_fault(policy, p, H.db_delay_days(p, ctx.as_of))
+        ]
+
+        # CỔNG 2a (S6): ticket không ghi parcel_id, nhiều hãng đều có lỗi → không xác định được ai
+        ticket_parcel_id = ctx.ticket.get("parcel_id")
+        if ticket_parcel_id is None:
+            at_fault_carriers = {p["carrier_id"] for p in at_fault_parcels}
+            if len(at_fault_carriers) > 1:
+                return Verdict.escalate(
+                    f"ticket không xác định kiện nào, {len(at_fault_carriers)} hãng đều có lỗi DB "
+                    f"({', '.join(sorted(at_fault_carriers))}): không xác định được hãng nào khách đề cập"
+                )
+
+        action_parcel_id = action.get("parcel_id")
+        parcel = next((p for p in order["parcels"] if p["parcel_id"] == action_parcel_id), None)
         if parcel is None:
             parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
         db_delay = H.db_delay_days(parcel, ctx.as_of)
+
         if not H.carrier_at_fault(policy, parcel, db_delay):
+            # CỔNG 2b (S6): ticket ghi rõ parcel_id nhưng agent dùng kiện khác → sửa về đúng kiện
+            if ticket_parcel_id and ticket_parcel_id != action_parcel_id:
+                correct = next((p for p in order["parcels"] if p["parcel_id"] == ticket_parcel_id), None)
+                if correct and H.carrier_at_fault(policy, correct, H.db_delay_days(correct, ctx.as_of)):
+                    return Verdict.modify(
+                        f"sửa kiện ghi lỗi: agent chỉ {action_parcel_id} (trễ {db_delay} ngày, không lỗi), "
+                        f"ticket chỉ rõ {ticket_parcel_id} → sửa thành đúng kiện",
+                        parcel_id=correct["parcel_id"],
+                        carrier_id=correct["carrier_id"],
+                        driver_id=correct.get("driver_id"),
+                    )
+            # Agent nhầm kiện, có kiện khác thực sự có lỗi → escalate để người xác nhận
+            if at_fault_parcels:
+                return Verdict.escalate(
+                    f"agent ghi lỗi nhầm kiện {parcel['parcel_id']} (trễ {db_delay} ngày): "
+                    f"kiện có lỗi DB là {[p['parcel_id'] for p in at_fault_parcels]}"
+                )
             return Verdict.deny(
                 f"DB không xác nhận lỗi hãng: trễ {db_delay} ngày (ngưỡng {policy['late']['min_days_fee']} ngày), "
                 f"nguyên nhân={parcel.get('delay_cause')}"

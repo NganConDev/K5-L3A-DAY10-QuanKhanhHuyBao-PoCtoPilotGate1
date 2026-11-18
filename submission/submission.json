@@ -1,12 +1,12 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "K5-L3A-DAY10-QuanKhanhHuyBao-PoCtoPilotGate1",
+  "members": ["NguyenVanHuy-2A20203432"],
+  "incident": "S6",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Thu hẹp",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Mỗi ticket của khách chỉ liên quan đến một hãng vận chuyển; nếu đơn tách kiện, khách luôn ghi rõ parcel_id — trong thực tế khách đặt combo nhiều hãng thường chỉ nói 'đơn giao chậm' mà không phân biệt kiện.",
+    "reduce_or_prevent": "Gate Cổng 2a + 2b NGĂN được lỗi hãng oan khi DB tracking đúng — vì gate không đọc ticket text và không tin LLM, chỉ so sánh ticket.parcel_id (dữ liệu có cấu trúc) với DB; tuy nhiên chỉ GIẢM khả năng nếu DB tracking bị ghi sai delivered_date (gate tin tuyệt đối vào DB là nguồn sự thật).",
+    "measure_in_pilot": "Đo tỉ lệ đơn tách kiện multi-carrier có ticket không ghi parcel_id (monitor multi_carrier_order_rate) trong 1 tuần pilot thật; nếu > 20% thì tăng reviewer capacity hoặc yêu cầu khách ghi parcel_id bắt buộc; nếu < 10% thì đánh giá lại cost/ROI thật để xem có đủ điều kiện Tiếp tục không."
   }
 }

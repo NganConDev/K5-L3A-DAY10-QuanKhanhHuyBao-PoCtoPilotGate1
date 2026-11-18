@@ -222,9 +222,8 @@ Trạng thái: **Xong** (có bằng chứng) · **Chưa** · **Không áp dụng
 | 6 | Chi phí | Khối "kinh doanh và vận hành" của report: chi phí mỗi ticket so với làm tay, ROI, tiền LLM ticket đắt nhất; `config/operating_gates.json` mục `business` | cost/ticket ≤ 6000đ; ROI ≥ 0.30; daily_refund ≤ 2000000đ | Xong | R-base-prepared: cost=5641đ < 6000đ, ROI=0.77 > 0.30, daily_refund=155000đ << 2000000đ | NguyenVanHuy |
 | 7 | Vận hành | Runbook (Phiếu B mục B7.5–B7.6) + `config/operating_gates.json` mục `operations` (PIC, người duyệt, số người trực, điều kiện dừng, kênh báo tin) + metric trong `monitors.py` | Runbook 1-3, điều kiện dừng, escalation_rate < 0.40 | Xong | B7.5 Runbook 1-3 đầy đủ; operating_gates.json operations đã điền; escalation_rate=0.2462 < 0.40 | LêThanhTùng |
 | 8 | Con người, pháp lý | Bên thứ ba (hãng, tài xế, shop, người nhận quà, người đứng tên duyệt); `config/operating_gates.json` mục `legal`; thẻ S6, S7, S8 có mục riêng ở Phiếu C mục C3 | pii_fields_blocked_to_third_party; carrier_fault_requires_recorded_cause; người nhận quà ≠ khách đặt | Xong | operating_gates.json legal: 6 trường PII bị chặn; carrier_fault_requires_recorded_cause=true; Cổng 3 xóa customer_note; pii_leaks=0 | NguyenVanHuy |
-| 9 | Quyết định | Câu tiêu chí (Phiếu A mục A4) + hash Bản tiêu chí đã ký + quyết định Gate 1 (Phiếu B mục B8, Phiếu C mục C12) | Tiêu chí đã ký; hash khớp; quyết định có bằng chứng | Xong | Commit 0d95f88 "Sign acceptance criteria"; hash tiêu chí f5dfb5c1; B8 quyết định Tiếp tục có 3 bằng chứng | NguyenVanHuy |
+| 9 | Quyết định | Câu tiêu chí (Phiếu A mục A4) + hash Bản tiêu chí đã ký + quyết định Gate 1 (Phiếu B mục B8, Phiếu C mục C12) | Tiêu chí đã ký; hash khớp; quyết định có bằng chứng | Xong | Commit 0d95f88 "Sign acceptance criteria"; hash tiêu chí 685ab465; B8 quyết định Tiếp tục có 3 bằng chứng | NguyenVanHuy |
 
-Ô "Chưa" có rủi ro cao → chuyển thành một dòng Risk register (Phiếu C mục C10).
 
 ---
 

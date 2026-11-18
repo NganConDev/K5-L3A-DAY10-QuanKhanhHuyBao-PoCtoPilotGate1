@@ -19,7 +19,28 @@ def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
+def multi_carrier_order_rate(trials):
+    """Tỉ lệ ticket có đơn tách kiện từ nhiều hãng vận chuyển khác nhau.
+
+    Sáng đèn khi sự cố S6: gói S6 có nhiều đơn tách kiện nên tỉ lệ cao hơn hẳn bộ nền.
+    Dữ liệu: event type='tracking' trong trial.events, field 'parcels'[].carrier_id.
+    Điểm mù: không thấy khi nhiều kiện nhưng tất cả cùng một hãng.
+    """
+    multi = 0
+    for trial in trials:
+        for ev in (trial.get("events") or []):
+            if ev.get("type") != "tracking":
+                continue
+            parcels = ev.get("parcels", [])
+            carrier_ids = {p.get("carrier_id") for p in parcels if p.get("carrier_id")}
+            if len(carrier_ids) > 1:
+                multi += 1
+            break
+    return multi / max(1, len(trials))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "multi_carrier_order_rate": multi_carrier_order_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
