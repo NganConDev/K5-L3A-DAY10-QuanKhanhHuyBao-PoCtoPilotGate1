@@ -1,4 +1,4 @@
-<img width="510" height="196" alt="image" src="https://github.com/user-attachments/assets/ba746a0c-0b31-47c2-9d0f-d758a361ab34" /># Phiếu A · Tiêu chí và cách đo · Khối 1 (phút 15–65)
+# Phiếu A · Tiêu chí và cách đo · Khối 1 (phút 15–65)
 
 **Bàn:** ______ · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
 
@@ -48,12 +48,13 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
+| **Bước / hành vi được đo** | | |
 | **Khi số ngày trễ bị tính sai, đối chiếu lần lượt dữ liệu tracking gốc, dữ liệu công cụ trả cho trợ lý và kết luận của trợ lý. Cách này giúp nhóm phân biệt lỗi dữ liệu đầu vào với lỗi suy luận khi trợ lý đã nhận đúng dữ liệu** | | |
 | **Thước đo** (một câu, có đơn vị) | | |
 | **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
 | **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
 | **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | Nếu số ngày trễ bị chọn sai, chỉ số này chưa cho biết dữ liệu tracking đầu vào đã sai hay trợ lý suy luận sai. Cần đối chiếu bản ghi tracking gốc, dữ liệu công cụ trả về và số ngày trễ trợ lý đã chọn. | | |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | Chỉ số chưa phân biệt được lỗi tracking đầu vào với lỗi suy luận của trợ lý. Khi số ngày trễ bị chọn sai, cần đối chiếu bản ghi tracking gốc, dữ liệu công cụ trả về và số ngày trễ trợ lý đã chọn. | |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
