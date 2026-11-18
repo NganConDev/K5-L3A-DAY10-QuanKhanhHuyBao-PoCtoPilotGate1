@@ -64,3 +64,42 @@ Phiếu A, mục A2 và A3. Bổ sung mã commit hoặc mã lần chạy khi có
 ### Exit ticket
 
 Bổ sung cuối buổi.
+
+
+## DuongQuangBao-2A202503362
+
+### Phần việc phụ trách
+
+Vận hành và pháp lý (Operations & Legal Lead), phụ trách các nội dung thuộc Issue #5 trong Khối 1 và Khối 2: mục tiêu stakeholder, telemetry production, HAZOP mở rộng, checklist Go-Live, pre-mortem, cổng vận hành/pháp lý, runbook và kế hoạch giờ cao điểm.
+
+### Đóng góp cụ thể
+
+- **Câu 1.2 – Mục tiêu stakeholder:** Xác định mục tiêu của chị Oanh (đối soát, không ghi nhận lỗi oan cho hãng vận chuyển) và chị Hạnh (kiểm soát năng lực duyệt, hàng chờ và thời gian xử lý).
+- **Câu 1.4 – Telemetry production:** Đề xuất Re-escalation rate để theo dõi ticket khách hàng khiếu nại lại hoặc gọi tổng đài trong 24 giờ; xác định nguồn log, công thức, cửa sổ trượt 4 giờ và ngưỡng cảnh báo 5%/10%.
+- **Câu 2.4 – HAZOP:** Phân tích các sai lệch khi thực hiện `issue_refund`, gồm dữ liệu ngày trễ sai, policy không hợp lệ, dữ liệu thiếu, prompt injection và lỗi ghi sổ; bổ sung rủi ro quá tải người duyệt và lộ dữ liệu cá nhân khi gửi cho bên thứ ba.
+- **Câu 2.4 – Checklist Go-Live:** Xác định nội dung kiểm tra, bằng chứng và PIC cho 9 nhóm: chất lượng, dữ liệu, bảo mật, quyền hạn, hiệu năng/hạ tầng, chi phí, vận hành, con người/pháp lý và quyết định.
+- **Câu 2.5 – Pre-mortem:** Đề xuất các kịch bản thất bại về quá tải hàng chờ trong Mega Sale, ghi lỗi hãng khi thiếu bằng chứng và gửi thông tin cá nhân không cần thiết cho bên thứ ba.
+- **Câu 2.10 – Cổng vận hành và pháp lý:** Xây dựng đề xuất cấu hình cho `operations` và `legal` trong `config/operating_gates.json`; xác định PIC vận hành `NV-TUNG`, người duyệt `NV-HANH`, giới hạn năng lực 6 ticket/người/giờ, SLA 60 phút, điều kiện dừng, kênh cảnh báo, sampling 10%, danh sách trường PII cần chặn và yêu cầu có nguyên nhân được ghi nhận trước khi quy lỗi cho hãng.
+- **Runbook 1–3:** Xác định vai trò chịu trách nhiệm, tín hiệu/ngưỡng cảnh báo, quy trình tắt switch, chuyển ticket đang chờ sang xử lý thủ công và điều kiện phê duyệt khởi động lại.
+- **B7.6 – Peak Hours:** Đề xuất phương án ứng phó khung giờ 11:00–13:00 và 20:00–22:00 ngày Mega Sale với tải dự kiến 18 ticket/giờ; gọi người dự phòng khi hàng chờ vượt 6 ticket hoặc thời gian chờ đạt 45 phút; thu hẹp phạm vi tự động khi hàng chờ vượt 15 ticket.
+
+### Bằng chứng
+
+- Issue phân công: [Issue #5 – Operations & Legal Lead](https://github.com/NganConDev/K5-L3A-DAY10-QuanKhanhHuyBao-PoCtoPilotGate1/issues/5).
+- Phiếu A: `templates/form-a-criteria.md`, mục A1/A2.
+- Phiếu B: `templates/form-b-evaluation-gates.md`, mục B4–B7.6.
+- Dữ liệu vận hành và nhân sự: `data/world.json`.
+- Cấu hình cổng vận hành/pháp lý: `config/operating_gates.json`.
+- Các nội dung trên là phần đóng góp thiết kế và tài liệu; chỉ ghi nhận cấu hình/runbook đã được áp dụng hoặc commit sau khi kiểm tra trạng thái thực tế trên repository.
+
+### Công cụ AI và cách tự kiểm tra
+
+- Sử dụng ChatGPT để hỗ trợ hệ thống hóa HAZOP, soạn nội dung telemetry, checklist, pre-mortem và runbook.
+- Đối chiếu các ngưỡng vận hành, nhân sự và chi phí với `data/world.json`; đối chiếu tên trường cấu hình với template B7.5.
+- Rà lại công thức telemetry, mẫu số và cách xử lý ticket chưa đủ 24 giờ quan sát; không tự tạo số liệu đánh giá hoặc kết quả chạy.
+
+### Exit ticket
+
+Một điều học được: Chỉ số production không nhất thiết phải có nhãn đúng/sai; hành vi khách hàng như mở lại ticket hoặc gọi tổng đài có thể dùng làm tín hiệu proxy để phát hiện chất lượng xử lý suy giảm.
+
+Một điều còn chưa chắc: Cách cân bằng giữa số lượng reviewer dự phòng, chi phí vận hành và thời gian chờ trong các đợt tải tăng đột biến; cần dùng kết quả đo thực tế để xác nhận phương án.
