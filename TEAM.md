@@ -13,10 +13,14 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; thêm dòng nếu 
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 | Nguyễn Nam Khánh | 2A202603398 | Kỹ sư cổng 1 | Có |
+|   2| Nguyễn Nam Khánh | 2A202603398 | Kỹ sư cổng 1 | Có |
 |   2 | Quân | (Cập nhật sau) | Kỹ sư cổng 2 | Không |
 |   3 | Huy | (Cập nhật sau) | Sản phẩm và kinh doanh | Không |
 |   4 | Bảo | (Cập nhật sau) | Vận hành và pháp lý | Không |
+|   1 | Lê Hoàng Quân|2A202603369|Kỹ sư cổng 2 (QA & Trace Engineer)|             |
+|   2 |           |      |     |             |
+|   3 |           |      |     |             |
+|   4 |           |      |     |             |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
 
@@ -44,3 +48,23 @@ Kỹ sư cổng 1 (Lead Gate Engineer): Phụ trách thiết kế offline metric
 
 Một điều học được: Bản tiêu chí chấp nhận phải được niêm phong bằng chữ ký hash trước khi nhìn bất kỳ con số đánh giá nào để tránh cherry-picking ngưỡng.
 Một điều còn chưa chắc: Cách cân bằng giữa tỉ lệ chuyển người duyệt (escalation) và chi phí vận hành trên mỗi ticket khi gặp ca khó.
+## LeHoangQuan-2A202603369
+
+### Phần việc phụ trách
+
+Kỹ sư cổng 2 theo issue #3. Phụ trách góp ý A2–A3, phân tích trace ở B2,
+đóng góp B6 và kiểm thử hành vi ở B7.2–B7.3.
+
+### Đóng góp cụ thể
+
+- Kiểm tra môi trường trên Windows với Python 3.11.9, đạt 13/13 tests.
+- Góp ý điểm mù của thước đo ở A2 và giải thích lựa chọn (b) ở A3.
+- Dùng AI để hỗ trợ rà và diễn đạt góp ý A2–A3.
+
+### Bằng chứng
+
+Phiếu A, mục A2 và A3. Bổ sung mã commit hoặc mã lần chạy khi có.
+
+### Exit ticket
+
+Bổ sung cuối buổi.

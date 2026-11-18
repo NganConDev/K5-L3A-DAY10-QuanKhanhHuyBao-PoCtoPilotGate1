@@ -46,6 +46,21 @@ DỮ LIỆU nào, ở đâu, ai gán nhãn; TÍNH thế nào để hai người 
 | **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | `(Số lần proposal.delay_days_used != tracking.db_delay_days) / (Tổng số lần có sinh proposal) * 100%`. Ca không tới được bước proposal (lỗi cú pháp hoặc từ chối sớm) bị loại khỏi mẫu số và thống kê riêng. | `(Số ticket bị khiếu nại lại trong 24h) / (Tổng số ticket trợ lý tự động giải quyết trong 24h) * 100%`. Ticket đang chờ duyệt không tính vào mẫu số. |
 | **Khung thời gian / ngưỡng báo động** | (không áp dụng) | Cửa sổ trượt 4 giờ. Báo động VÀNG khi > 5%, Báo động ĐỎ khi > 10% (kích hoạt tạm dừng auto-resolve). |
 | **Điểm mù** (thước đo này KHÔNG thấy gì) | Không phát hiện được trường hợp lỗi nằm ngay ở thiết bị quét của bưu tá/depot (quét thiếu hoặc cập nhật trễ vào DB). | Không đo được sự bất mãn của những khách hàng âm thầm bỏ dịch vụ (silent churn) mà không khiếu nại lại. |
+| **Bước / hành vi được đo** | | |
+| **Khi số ngày trễ bị tính sai, đối chiếu lần lượt dữ liệu tracking gốc, dữ liệu công cụ trả cho trợ lý và kết luận của trợ lý. Cách này giúp nhóm phân biệt lỗi dữ liệu đầu vào với lỗi suy luận khi trợ lý đã nhận đúng dữ liệu** | | |
+| **Thước đo** (một câu, có đơn vị) | | |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
+| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | Chỉ số chưa phân biệt được lỗi tracking đầu vào với lỗi suy luận của trợ lý. Khi số ngày trễ bị chọn sai, cần đối chiếu bản ghi tracking gốc, dữ liệu công cụ trả về và số ngày trễ trợ lý đã chọn. | |
+
+**Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
+Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
+và `tracking.db_delay_days` trong `runs/<mã lần chạy>/traces/`, 22 ticket × 5 seed của bộ nền. Cách tính: số lần hai giá trị khác
+nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không tới bước `proposal` bị loại khỏi mẫu số và đếm riêng.
+Điểm mù: không thấy trường hợp chính tracking DB sai.
+
+*(Ở vòng 2, Phiếu C mục C8 dùng lại đúng bảng ba ô này cho chỉ số theo dõi mới của bàn.)*
 
 ---
 
@@ -58,6 +73,7 @@ DỮ LIỆU nào, ở đâu, ai gán nhãn; TÍNH thế nào để hai người 
 Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(b)**
 
 Giải thích một câu: Khoảng tin cậy 95% của bản X là [0.9400; 1.0000] bao trùm toàn bộ kết quả của bản Y (1.0000), và chênh lệch 1 lần chạy (49/50 vs 50/50) hoàn toàn nằm trong biên độ biến thiên ngẫu nhiên của mẫu, nên chưa đủ căn cứ thống kê để khẳng định Y tốt hơn X.
+Giải thích một câu: X đúng 49/50 và Y đúng 50/50. Chênh một ca trên mẫu 50 ca chưa đủ bằng chứng để kết luận Y tốt hơn
 
 ---
 
