@@ -25,6 +25,7 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
 - Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Không ghi nhận lỗi cho hãng nếu chưa có bằng chứng đối chiếu từ tracking gốc. Mỗi khoản hoàn và mỗi lỗi hãng phải truy vết được tới đơn hàng, kiện hàng, trạng thái tracking và bản ghi sổ tương ứng; mục tiêu là không phát sinh lỗi hãng oan và giảm chênh lệch khi đối soát tuần.
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Không ghi nhận lỗi cho hãng nếu chưa có bằng chứng đối chiếu từ tracking gốc. Mỗi khoản hoàn và mỗi lỗi hãng phải truy vết được tới đơn hàng, kiện hàng, trạng thái tracking và bản ghi sổ tương ứng; mục tiêu là không phát sinh lỗi hãng oan và giảm chênh lệch khi đối soát tuần.
 
 - Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Hàng chờ duyệt không vượt năng lực 6 ca/người/giờ và thời gian chờ lâu nhất không quá 60 phút trong điều kiện ca thường có 1 người duyệt. Khi vượt ngưỡng, phải gọi người dự phòng hoặc chuyển ticket về luồng CSKH thủ công, không để trợ lý tiếp tục tạo thêm việc vượt khả năng xử lý.
 ---
