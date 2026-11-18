@@ -22,20 +22,20 @@
 ### 🏁 Checkpoint 1: Mở đầu, cài đặt & chia vai (Phút 0–15)
 - [ ] Clone repo và gắn remote upstream: `git remote add upstream https://github.com/VinUni-AI20k/K5_L3_Day10_PoC-to-Pilot_Gate1_student.git`
 - [ ] Chạy bài test công khai: `python3 -m unittest discover -s tests` (kết quả `Ran 13 tests … OK`)
-- [ ] Điền thông tin 4 thành viên và vai trò vào `TEAM.md`
+- [x] Điền thông tin 4 thành viên và vai trò vào `TEAM.md`
 - [ ] Mời tài khoản team chấm vào Collaborators với quyền Read
 
-### 📝 Checkpoint 2: Khối 1 · Tiêu chí & Ký tiêu chí (Phút 15–65) · Phiếu A
-- [ ] **A1 (15–20')**: Mục tiêu cấp hệ thống (Huy - Câu 1.1) & Mục tiêu chị Oanh/chị Hạnh (Bảo - Câu 1.2)
-- [ ] **A2 (20–35')**: Offline metric cho 1 bước agent (Khánh - Câu 1.3) & Telemetry production (Bảo - Câu 1.4)
-- [ ] **A3 (35–40')**: Thống nhất câu 1.5 đọc khoảng tin cậy (Cả bàn)
-- [ ] **A4 (40–60')**: Bản tiêu chí "Nếu ... thì ...", 2 câu ranh giới đầu ra, điền `config/acceptance_criteria.json` (Huy - Câu 1.6)
-- [ ] **A5 (60–65')**: **KÝ TIÊU CHÍ TRƯỚC KHI CHẠY EVAL LẦN NÀO**:
+### 📝 Checkpoint 2: Khối 1 · Tiêu chí & Ký tiêu chí (Phút 15–65) · Phiếu A [HOÀN THÀNH - ĐÃ KÝ]
+- [x] **A1 (15–20')**: Mục tiêu cấp hệ thống (Huy - Câu 1.1) & Mục tiêu chị Oanh/chị Hạnh (Bảo - Câu 1.2)
+- [x] **A2 (20–35')**: Offline metric cho 1 bước agent (Khánh - Câu 1.3) & Telemetry production (Bảo - Câu 1.4)
+- [x] **A3 (35–40')**: Thống nhất câu 1.5 đọc khoảng tin cậy: Chọn (b) (Cả bàn)
+- [x] **A4 (40–60')**: Bản tiêu chí "Nếu ... thì ...", 2 câu ranh giới đầu ra, điền `config/acceptance_criteria.json` (Huy - Câu 1.6)
+- [x] **A5 (60–65')**: **KÝ TIÊU CHÍ TRƯỚC KHI CHẠY EVAL LẦN NÀO**:
   ```bash
   python3 -m lab10.criteria sign
-  git add config/acceptance_criteria.json config/acceptance_criteria.lock && git commit -m 'Sign acceptance criteria' && git push -u origin main
+  git add config/acceptance_criteria.json config/acceptance_criteria.lock && git commit -m 'Sign acceptance criteria'
   ```
-- [ ] Ghi mã commit và giờ ký vào Phiếu A mục A5. (Từ đây tuyệt đối không sửa `acceptance_criteria.json`)
+- [x] Đã ghi mã commit (`68f6d96`), giờ ký (`2026-11-18 15:57:10`) và hash niêm phong vào Phiếu A mục A5. (Từ đây tuyệt đối không sửa `acceptance_criteria.json`)
 
 ### 🔍 Checkpoint 3A: Khối 2A · Tìm rủi ro trước khi xảy ra (Phút 65–85) · Phiếu B
 - [ ] Chạy đánh giá mốc **base**:
