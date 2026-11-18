@@ -24,9 +24,9 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Không ghi nhận lỗi cho hãng nếu chưa có bằng chứng đối chiếu từ tracking gốc. Mỗi khoản hoàn và mỗi lỗi hãng phải truy vết được tới đơn hàng, kiện hàng, trạng thái tracking và bản ghi sổ tương ứng; mục tiêu là không phát sinh lỗi hãng oan và giảm chênh lệch khi đối soát tuần.
 
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Hàng chờ duyệt không vượt năng lực 6 ca/người/giờ và thời gian chờ lâu nhất không quá 60 phút trong điều kiện ca thường có 1 người duyệt. Khi vượt ngưỡng, phải gọi người dự phòng hoặc chuyển ticket về luồng CSKH thủ công, không để trợ lý tiếp tục tạo thêm việc vượt khả năng xử lý.
 ---
 
 <a id="a2"></a>
@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
-| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+| **Bước / hành vi được đo** | |Theo dõi hành vi tự động xử lý và đóng ticket của trợ lý, cụ thể là việc trợ lý hoàn tất xử lý nhưng ticket bị khách hàng khiếu nại, mở lại hoặc phải chuyển cho CSKH xử lý lại trong vòng 24 giờ. |
+| **Thước đo** (một câu, có đơn vị) | |Tỉ lệ ticket do trợ lý tự xử lý bị mở lại hoặc phát sinh cuộc gọi/khiếu nại tới CSKH trong vòng 24 giờ, tính theo phần trăm. |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | |Log ticket của trợ lý và sự kiện mở lại/khiếu nại từ hệ thống hotline, cổng khiếu nại CSKH. Liên kết bằng ticket_id. |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | |Số ticket có ít nhất một lần mở lại hoặc khiếu nại trong 24 giờ sau khi trợ lý hoàn tất / tổng ticket tự xử lý đã đủ 24 giờ quan sát × 100%. Một ticket chỉ tính một lần. Ticket chưa đủ 24 giờ bị loại khỏi tử số và mẫu số, đồng thời báo riêng số lượng. |
+| **Khung thời gian / ngưỡng báo động** | (không áp dụng) |Cửa sổ trượt 4 giờ. Vàng: trên 5%. Đỏ: trên 10% → tạm dừng tự động xử lý liên quan, chuyển ticket sang CSKH duyệt thủ công và điều tra nguyên nhân. |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | |Không phát hiện được lỗi chìm mà khách hoặc hãng chưa nhận ra, chưa khiếu nại. Chỉ số tăng không chứng minh nguyên nhân do trợ lý; cần đối chiếu ticket, trace và tracking để xác định nguyên nhân. |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
@@ -71,10 +71,13 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(a) · (b) · (c) · (d)**
+**Đáp án: (b)**
 
-Giải thích một câu: …
+**Giải thích:**
 
+Chưa đủ bằng chứng để kết luận phương án Y tốt hơn phương án X. Mặc dù Y đạt 50/50 và X đạt 49/50, chênh lệch chỉ là 1 trường hợp. Khoảng tin cậy 95% của X là `[0.94, 1.00]`, vẫn chứa giá trị 1.00. Vì vậy, kết quả hiện tại chưa chứng minh được Y vượt trội hơn X.
+
+*Kết luận:* Cần thêm dữ liệu đánh giá trước khi quyết định thay X bằng Y.
 ---
 
 <a id="a4"></a>
