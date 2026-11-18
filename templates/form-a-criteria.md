@@ -20,12 +20,13 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.1 · Một mục tiêu cấp hệ thống (khác "model trả lời đúng")
 
+
 > Trợ lý thay thế hoàn toàn bước xử lý thủ công cho các ca hoàn tiền giao trễ nằm trong chính sách tự động, đảm bảo khách nhận phản hồi trong cùng ngày làm việc, sổ cái của LogiX khớp với hãng vận chuyển, và kế toán đối soát không phát sinh thêm công việc kiểm tra bổ sung.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Không phát sinh bất kỳ trường hợp nào ghi nhận lỗi sai cho đối tác vận chuyển (`wrongful_carrier_faults = 0`) và mọi khoản tiền hoàn tự động đều có log khớp với trạng thái scan bưu kiện thực tế, tránh tranh chấp công nợ cuối tuần.
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Số ca trợ lý chuyển sang duyệt không vượt quá công suất trực ca (≤ 6 ca/người/giờ), thời gian chờ duyệt tối đa dưới 60 phút, và mỗi quyết định tự động đều kèm tóm tắt nguyên nhân rõ ràng để giảm tải kiểm tra thủ công.
 
 ---
 
@@ -36,15 +37,7 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 **Khung tư duy.** Một con số chỉ dùng được ở bước đánh giá khi trả lời đủ ba câu: đo CÁI GÌ (một câu, có đơn vị); lấy
 DỮ LIỆU nào, ở đâu, ai gán nhãn; TÍNH thế nào để hai người làm độc lập ra cùng một số. Thiếu ô thứ ba thì chưa phải thước đo.
 
-**Câu hỏi dẫn dắt**
-- Thước đo này nói về MỘT bước của agent hay cả luồng? Nếu cả luồng hỏng, nó có chỉ ra bước nào hỏng không?
-- Dữ liệu đã có sẵn (trace, sổ cái) hay phải thu thêm? Nhãn đúng/sai đến từ đâu?
-- Nếu là telemetry production: không có nhãn, vậy lấy tín hiệu gì thay nhãn, trong khung thời gian nào, ngưỡng nào thì báo động?
-
 ### Câu 1.3 · Offline metric cho MỘT bước · Câu 1.4 · Telemetry production
-
-Câu 1.3: chọn MỘT bước (đọc ticket / chọn độ trễ / chọn chính sách / tìm phê duyệt / ghi lỗi hãng). Câu 1.4: tín hiệu cho biết
-trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có nhãn trong production.
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
@@ -53,6 +46,7 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 | **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
 | **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
 | **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
+
 | **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
@@ -73,6 +67,7 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 Số minh hoạ trong đề (không phải số của bàn). Khoanh: (a) · **(b)** · (c) · (d)
 
+
 Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa cả điểm 1,0 của Y, nên sự chênh lệch 1 lần chạy không có ý nghĩa thống kê và chưa đủ căn cứ để kết luận Y tốt hơn X.
 
 ---
@@ -83,17 +78,11 @@ Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa 
 
 ### Câu 1.6 · Bản tiêu chí
 
-**Cách làm, ba bước:** (1) viết tiêu chí thành **một câu có hành động đi kèm**, thử vài phiên bản;
-(2) đưa từng phiên bản qua bốn câu hỏi soát; (3) chốt bản cuối và hẹn ngày xem lại. Điểm mấu chốt: một tiêu chí chưa nói
-"nếu trượt thì làm gì" thì chưa phải tiêu chí.
-
-#### Bước 1 · Viết câu tiêu chí (mỗi chỉ số bắt buộc một câu; thử 2 phiên bản cho chỉ số bàn tranh luận nhiều nhất)
-
-> Nếu **{chỉ số, có đơn vị}** của **{trợ lý hoàn tiền, trên bộ thử nào}** **{tụt dưới / vượt quá}** **{ngưỡng}**
-> thì chúng tôi sẽ **{hành động cụ thể: Tiếp tục / Thu hẹp phần nào / Cải tiến thêm tới ngày nào / Dừng}**.
+#### Bước 1 · Viết câu tiêu chí
 
 | Chỉ số (khoá trong `acceptance_criteria.json`) | Phiên bản 1 | Phiên bản 2 (nếu có) |
 |---|---|---|
+
 | `pass_rate_min` | Nếu tỉ lệ ca trợ lý xử lý đúng (pass_rate) trên bộ nền tụt dưới **85%** thì chúng tôi sẽ chọn Cải tiến thêm và không triển khai pilot cho đến khi đạt ngưỡng. | Nếu tụt dưới 85% và nhóm không có giả thuyết sửa cụ thể trong 2 tuần thì chúng tôi sẽ Dừng. |
 | `pass_k_min` (pass^k: ticket đúng cả 5/5 lần chạy) | Nếu tỉ lệ ticket đúng toàn bộ 5 seed (pass^k) tụt dưới **75%** thì chúng tôi sẽ Thu hẹp phạm vi pilot về kho có tỉ lệ cao hơn và Cải tiến thêm. | — |
 | `wrongful_refund_vnd_max` | Nếu tổng tiền hoàn sai vượt quá **0 đồng** thì chúng tôi sẽ không chọn Tiếp tục; sau một vòng sửa vẫn còn thì Dừng tự động ghi sổ cái. | — |
@@ -108,10 +97,12 @@ Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa 
 - Một đầu ra hoặc hành động bị cấm: Trợ lý không được tự động hoàn vượt quá **200.000đ** cho một khách trong một ngày (theo policy REFUND-v3, `auto_limit_vnd` = 200.000); mọi khoản vượt mức này phải chuyển cho người duyệt, không được ghi sổ tự động.
 - Ngưỡng chuyển cho người duyệt: Chuyển khi tổng tiền hoàn tự động cho một khách trong ngày đạt 200.000đ, HOẶC hãng vận chuyển đã bị ghi lỗi ≥ 3 lần trong ngày (`ops_limits.max_auto_strikes_per_carrier_per_day` = 2, từ lỗi thứ 3 phải có người duyệt), HOẶC nguyên nhân trễ không phải CARRIER hay FORCE_MAJEURE trong policy hiện hành.
 
+
 #### Bước 2 · Soát từng câu
 
 | Câu hỏi soát | Ghi chú của bàn |
 |---|---|
+
 | Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | Có: khách quan tâm pass_rate (đúng tiền), hãng quan tâm wrongful_carrier_faults (không bị oan), kế toán quan tâm wrongful_refund_vnd (sổ sạch), người duyệt quan tâm escalation_rate (không bị ùn), lãnh đạo quan tâm ROI và cost. |
 | Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | Nếu ép pass_rate quá cao → guard chặn nhiều → người duyệt (NV-HANH) gánh khối lượng lớn hơn. Nếu ép cost thấp quá → giảm độ phủ pilot → khách ở kho nhỏ không được hưởng lợi. |
 | Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | Có: ngày 1 cần đảm bảo không có lỗi tài chính (3 chỉ số = 0) và hệ thống vận hành được (pass_rate ≥ 85%, queue_stuck ≤ 2). |
@@ -129,7 +120,6 @@ Giải thích một câu: Khoảng tin cậy 95% của X là [0,94; 1,0] chứa 
 
 **Ví dụ một câu (đừng chép ngưỡng):** "Nếu số lỗi hãng oan của trợ lý trên bộ nền hoặc trên bất kỳ gói thử nào vượt quá 0
 thì chúng tôi sẽ không chọn Tiếp tục; nếu sau một vòng sửa vẫn vượt, tắt tool ghi lỗi hãng và chọn Thu hẹp."
-
 ---
 
 <a id="a5"></a>
@@ -151,3 +141,4 @@ git add config/acceptance_criteria.json config/acceptance_criteria.lock && git c
 | Đã push lên `origin main` thành công? | có (branch huy) |
 
 Sau bước này **không sửa** `config/acceptance_criteria.json`, kể cả mở rồi lưu lại bằng trình soạn thảo tự định dạng.
+
