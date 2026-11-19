@@ -1,6 +1,11 @@
 {
   "team": "K5-L3A-DAY10-QuanKhanhHuyBao-PoCtoPilotGate1",
-  "members": ["NguyenVanHuy-2A20203432"],
+  "members": [
+    "NguyenNamKhanh-2A202603398",
+    "LeHoangQuan-2A202603369",
+    "NguyenVanHuy-2A20203432",
+    "DuongQuangBao-2A202603362"
+  ],
   "incident": "S6",
   "decision_v1": "Tiếp tục",
   "decision_v2": "Thu hẹp",
