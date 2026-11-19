@@ -310,7 +310,7 @@ Ghi các dòng đổi sau sự cố. Mỗi dòng vẫn phải có một PIC có 
 
 | | **v2** (SAU sự cố S6) |
 |---|---|
-| Commit ký tiêu chí | `394c25a` (giống v1) |
+| Commit ký tiêu chí | `0d95f88` (giống v1) |
 | Hash chốt cổng vòng 1 | `b8695640` (giống v1) |
 | Mã lần chạy dùng làm bằng chứng | S6 base: `R-S6-before-20261118-181933-b47231` · prepared: `R-S6-prepared-20261118-181933-b47231` · after: `R-S6-after-20261118-181933-b47231` |
 | Còn dòng "vượt trần" nào trong report? | **Có**: `cost_per_ticket_vnd = 7462đ > 6000đ` (ngưỡng đã ký) trên bộ S6 visible. Bộ nền: cost = 5641đ ✅, ROI = 0.77 ✅, không vượt trần nào. |
